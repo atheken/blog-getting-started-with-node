@@ -6,6 +6,20 @@ var http = require('http');
 
 //create our middleware stack (just send a basic message for now):
 var app = connect()
+	//add logging to all requests
+	.use(connect.logger())
+	 //serve "static files from the public directory"
+	 .use(connect.static(__dirname + '/public'))
+	 //produce a special message when the path matches.
+	 .use(function(req, res, next){
+	 	if(req.url === '/hello_world'){
+	 		res.write('Hello World!');
+	 		res.end();
+	 	}else{
+	 		next();
+	 	}
+	 })
+	//do the original request handling added in part 1.
 	.use(function(request, response){
 		response.write('Hello from connect!');
 		response.end();
