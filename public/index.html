@@ -1,8 +1,65 @@
+<!DOCTYPE html>
 <html>
 <head>
-	<link rel="Stylesheet" type="text/css" href="main.css" />
+	<style>
+*{
+	font-family: arial;
+	padding: 0px;
+	margin: 0px;
+}
+html{
+	width: 100%;
+	background: #cfcfcf;
+}
+body{
+	text-align: center;
+	width: 80%;
+	margin: 20px auto;
+	padding: 10px;
+	background: white;
+	border-radius: 5px;
+	box-shadow: 0px 0px 5px 0px;
+}
+input{
+	width:50%;
+	font-size: 20px;
+	padding: 5px;
+}
+#results{
+	min-height: 200px;
+	padding: 10px;
+}
+	</style>
 </head>
 <body>
-	Welcome to this static page!
+	<input type="text" id="query" placeholder="Search Wikipedia">
+	<div id="results">You can query wikipedia by typing a search above.</div>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.2/underscore-min.js"></script>
+	<script>
+		$(function(){
+			// this is a pretty sloppy way of doing the this, but it's done here for 
+			// demo purposes. Client-side scripting is a topic for another blog. :-)
+			var results = $('#results');
+			$('#query').keyup(_.debounce(function(){
+
+				var query = $(this).val();
+				if(query !== ''){
+					results.empty().append('<i>Searching...</i>');
+					$.get('/search',{q : query}).success(function(data){
+						results.empty();
+						_.each(data, function(element){
+							results.append('<a target="_blank" href="http://en.Wikipedia.org/wiki/' + element + '">' + element + '</a><br/>');
+						});
+					}).error(function(){
+						results.empty().append('Oops, something bad happened, we couldn\'t get any Wikipedia results' );
+					});
+				}
+				else{
+					results.empty().append('You can search wikipedia by typing a query above.');
+				}
+			}, 250))
+		})
+	</script>
 </body>
 </html>
